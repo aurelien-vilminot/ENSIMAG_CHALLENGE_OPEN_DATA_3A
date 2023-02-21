@@ -1,0 +1,25 @@
+Calcul des notes attribuées aux stations : 
+
+Utilisation de l'indice ATMO basé sur 5 indicateurs :
+- Particules fines dont le diamètre est inférieur à 2.5 micromètres : PM2.5
+- Particules fines dont le diamètre est inférieur à 10 micromètres : PM10
+- Dioxyde d'azote : NO2
+- Ozone : O3
+- Dioxyde de souffre : SO2
+
+A partir de la concentration de ces polluants, on calcule un indicateur pour chaque polluant. L'indicateur ATMO choisit comme indicateur la plus mauvaise note de l'ensemble des 5.
+
+Les notes vont de 1 à 6 :
+- 1 : Bon
+- 2 : Moyen
+- 3 : Dégradé
+- 4 : Mauvais
+- 5 : Très mauvais
+- 6 : Extrèmement mauvais
+
+
+
+Quelle part de la pollution est attribuée à quelle polluant ?
+Représentation à l'aide d'un camembert pour une station choisie
+ex:  les notes sont : 1 / 2 / 3 / 4 / 5
+et ils représenteront 1/15, 2/15, 3/15, 4/15 et 5/15 du camembert.

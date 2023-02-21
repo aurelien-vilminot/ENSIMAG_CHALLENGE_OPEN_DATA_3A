@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <title>Où se promener</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="css/index.css" rel="stylesheet" media="screen" />
+        <link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+        <style>
+            .dropdown-menu li {
+                position: relative;
+            }
+
+            .dropdown-menu .submenu {
+                display: none;
+                position: absolute;
+                left: 100%;
+                top: -7px;
+            }
+
+            .dropdown-menu .submenu-left {
+                right: 100%;
+                left: auto;
+            }
+
+            .dropdown-menu > li:hover {
+                background-color: #f1f1f1;
+            }
+
+            .dropdown-menu > li:hover > .submenu {
+                display: block;
+            }
+        </style>
+        <!-- Bootstrap -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+            crossorigin=""
+        />
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+            crossorigin=""
+        ></script>
+        <!-- JQuery -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js"
+            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+            crossorigin=""
+        ></script>
+        <!-- Select2 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <!-- Leaflet CSS before JS -->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css"
+            integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+            crossorigin=""
+        />
+        <script
+            src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js"
+            integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s="
+            crossorigin=""
+        ></script>
+        <!-- Leaflet MarkerCluster -->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"
+            integrity="sha384-5kMSQJ6S4Qj5i09mtMNrWpSi8iXw230pKU76xTmrpezGnNJQzj0NzXjQLLg+jE7k"
+            crossorigin=""
+        />
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"
+            integrity="sha384-lPzjPsFQL6te2x+VxmV6q1DpRxpRk0tmnl2cpwAO5y04ESyc752tnEWPKDfl1olr"
+            crossorigin=""
+        />
+        <script
+            src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"
+            integrity="sha384-RLIyj5q1b5XJTn0tqUhucRZe40nFTocRP91R/NkRJHwAe4XxnTV77FXy/vGLiec2"
+            crossorigin=""
+        ></script>
+        <!-- D3.js -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+        <!-- index.js defer -->
+        <script src="js/heatmap.js" defer></script>
+        <script src="js/leaflet-heatmap.js" defer></script>
+        <script src="js/utils.js" defer></script>
+        <script src="js/stationDetail.js" defer></script>
+        <script src="js/map.js" defer></script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg bg-light p-3">
+            <div class="container-fluid">
+                <a href="#" class="navbar-brand">
+                    <span class="fs-4">Où se promener</span>
+                </a>
+
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarToggler"
+                    aria-controls="navbarToggler"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-end" id="navbarToggler">
+                    <ul class="nav nav-pills gap-2">
+                        <li class="nav-item">
+                            <a
+                                href="#"
+                                class="nav-link active"
+                                id="dataVisualisationButton"
+                                aria-current="page"
+                                onclick="onDataVisualisationButtonClicked(this)"
+                            >
+                                Visualisation des données
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                href="#"
+                                class="nav-link"
+                                id="reportButton"
+                                onclick="onReportButtonClicked(this)"
+                                >Rapport</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!--Visualisation des données-->
+        <div class="container mt-4" id="dataVisualisationContainer">
+            <div class="row">
+                <div class="col-sm" id="mapAndInputs">
+                    <div id="map"></div>
+                    <div class="container-sm m-0" id="inputs">
+                        <div class="row">
+                            <div class="col-sm">
+                                <label class="col-sm-2" for="date-selector">Date</label>
+                                <input
+                                    type="date"
+                                    class="w-100"
+                                    id="date-selector"
+                                    name="station-date"
+                                    value="2022-01-15"
+                                    min="2022-01-01"
+                                    max="2022-01-31"
+                                />
+                            </div>
+                            <div class="col-sm">
+                                <label class="col-sm-2" for="day-range">Plage</label>
+                                <select class="w-100" id="day-range">
+                                    <option value="6">Une semaine</option>
+                                    <option value="13" selected>Deux semaines</option>
+                                    <option value="29">Un mois (30 jours)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-sm-2" for="station-selector">Station</label>
+                            <select id="station-selector" style="width: 100%"></select>
+                        </div>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            onclick="focusOnStation()"
+                            id="focusStationButton"
+                            style="display: none"
+                        >
+                            Centrer sur la station
+                        </button>
+                    </div>
+                </div>
+                <div id="pollutantByStationDiv" class="col-sm" style="display: none">
+                    <div id="info" class="container">
+                        <h4 id="stationTitle"></h4>
+                        <p id="noDataFoundMessage" style="display: none">
+                            Désolé, il n'y a pas de données disponibles pour cette période
+                        </p>
+                        <p id="airportsList" class="mb-2"></p>
+                        <div class="row row-cols-2 justify-content-start mt-2">
+                            <div class="col" id="pollutantListDiv">
+                                <p id="pollutantsTitle" class="mb-0">Polluant(s) :</p>
+                                <ul id="pollutantsList" class="list-group"></ul>
+                            </div>
+                            <div class="col">
+                                <canvas id="pieChart" style="display: none"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container row row-cols-auto justify-content-start" id="airGrade">
+                        <div class="col pe-0">
+                            <p>Qualité de l'air :</p>
+                        </div>
+                        <div class="col px-0">
+                            <img src="" alt="Emoji corresponding to grade" id="airGradeEmoji" />
+                        </div>
+                    </div>
+                    <div class="container" id="interpretationDiv">
+                        <p class="mb-0">Interprétation :</p>
+                        <p class="ps-2 fw-light text-wrap" id="interpretation"></p>
+                    </div>
+                    <canvas id="pollutantByStation"></canvas>
+                    <div id="pollutantsButtons" class="row justify-content-center"></div>
+                    <canvas id="displayLevelInfo" style="display: none"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!--Rapport-->
+        <div class="container row-cols-1" id="reportContainer" style="display: none">
+            <h1>Introduction</h1>
+            <p>
+                Ce projet a été réalisé dans le cadre de l'enseignement du Challenge Open Data
+                codirigé par Renaud BLANCH et Sylvain BOUVERET. Notre équipe de cinq étudiants est
+                constituée d'Arthur SARRY, Aurélien VILMINOT, Damien CLAUZON, Laure CERUTTI et
+                Maxime NEMO.
+                <br />
+                Vivant dans l'agglomération grenobloise, souvent décrite comme trop polluée, nous
+                avons choisi pour ce projet de représenter la pollution atmosphérique de différentes
+                villes françaises. Cette démarche s'inscrit dans une problématique de développement
+                durable et sociétal.
+            </p>
+
+            <h1>Jeux de données</h1>
+            <p>
+                L'ensemble des jeux de données utilisés sont sous la licence <i>open</i>. Nous avons
+                récupéré ceux-ci auprès d'institutions gouvernementales et allons utiliser les
+                données suivantes pour construire notre application :
+            </p>
+            <ol class="list-group list-group-numbered mb-3">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">
+                            Concentrations des polluants -
+                            <a
+                                href="https://www.data.gouv.fr/fr/datasets/donnees-temps-reel-de-mesure-des-concentrations-de-polluants-atmospheriques-reglementes-1/"
+                                target="_blank"
+                                >Lien</a
+                            >
+                        </div>
+                        La surveillance de la qualité de l'air est gérée par les associations
+                        agréées de la surveillance de la qualité de l'air (AASQA) effectuant des
+                        relevés réguliers des différents composants dans l'air. Les données
+                        disponibles par ces processus sont des données horaires issues d'analyseurs
+                        automatiques. Les concentrations des polluants atmosphériques suivants sont
+                        mesurées :
+                        <ul>
+                            <li>Ozone (O3)</li>
+                            <li>Monoxyde d'azote (NO)</li>
+                            <li>Dioxyde d'azote (NO2)</li>
+                            <li>Dioxyde de soufre (SO2)</li>
+                            <li>Particules de diamètre inférieur à 10 µm (PM10)</li>
+                            <li>Particules de diamètre inférieur à 2,5 µm (PM2.5)</li>
+                            <li>Monoxyde de carbone (CO)</li>
+                        </ul>
+                        Pour certaines stations, il est possible que certains polluants ne soient
+                        pas mesurés. Comme indiqué précédemment, les données sont actualisées en
+                        temps réel toutes les heures. Néanmoins, pour les besoins de ce projet, nous
+                        avons fait le choix de ne télécharger qu'une partie de ces données, à savoir
+                        sur le mois de janvier 2022. Sur cette même base de données, nous avons
+                        également récupéré un fichier permettant de faire le lien entre une station
+                        et ses coordonnées GPS afin de pouvoir la positionner sur la carte.
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">
+                            Aéroports français -
+                            <a
+                                href="https://www.data.gouv.fr/fr/datasets/aeroports-francais-coordonnees-geographiques/"
+                                target="_blank"
+                                >Lien</a
+                            >
+                        </div>
+                        Ce jeu de données nous permet de connaître les coordonnées géographiques des
+                        aéroports français recevant un trafic commercial significatif, c'est-à-dire
+                        supérieur à 2000 passagers. Il permet également de connaître la région et la
+                        ville desservies pour chacun des aéroports.
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">
+                            Découpage administratif -
+                            <a href="https://api.gouv.fr/documentation/api-geo" target="_blank"
+                                >Lien</a
+                            >
+                        </div>
+                        Ce jeu de données est exploitable sous la forme d'API. Il permet de faire le
+                        lien entre des coordonnées GPS et le nom de la ville, du département ainsi
+                        que de la région concernée. Ainsi, pour chaque station de mesure, nous avons
+                        utilisé un script Python récupérant les données associées via cette API.
+                        Cela nous permet de pouvoir faire un menu déroulant pour sélectionner la
+                        station souhaiter ainsi que de faire une recherche par ville et/ou par
+                        département.
+                    </div>
+                </li>
+            </ol>
+
+            <h1>Traitements effectués</h1>
+
+            <p><i>Ces étapes sont toutes réalisées en Python.</i></p>
+
+            <ol class="list-group list-group-numbered mb-3">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Nettoyage des données</div>
+                        Nous opérons en premier lieu un prétraitement des données. En effet, les
+                        fichiers fournis sont assez volumineux (10 Mo) et dépassent individuellement
+                        la limite imposée pour le projet. Ils présentent également des informations
+                        redondantes et une granularité dont nous n'avons pas l'utilité. Par exemple,
+                        une prise de mesure est effectuée chaque heure pour chaque station et pour
+                        chacun des polluants qu'elle est capable de capter. N'ayant besoin que d'une
+                        mesure par jour, nous en tirons une moyenne, une médiane, un écart-type
+                        ainsi qu'une valeur minimale et maximale. Nous gardons avec cela
+                        l'identifiant de la station, son nom et les unités utilisées. Ces opérations
+                        nous permettent de réduire la taille des fichiers à 135 Ko environ.<br />
+
+                        Nous établissons également une liste des stations rencontrées avec leur
+                        identifiant et leurs coordonnées que nous utilisons lors de l'étape
+                        suivante.
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">
+                            Mise en relation avec d'autres jeux de données et association d'un ou
+                            plusieurs aéroports aux stations.
+                        </div>
+                        Certaines informations intéressantes ne sont pas présentes dans le premier
+                        jeu de données telles que les coordonnées GPS des stations ainsi que la
+                        ville et le département dans lesquels elles se trouvent. Grâce à
+                        l'identifiant de la station, nous retrouvons, via un autre fichier de la
+                        même base de données, les coordonnées de chaque station. Cela nous permet
+                        par la suite de mettre celles-ci en relation avec l'API de découpage
+                        administratif afin d'obtenir une ville et un département correspondant.<br />
+
+                        Nous avons également pensé qu'il serait intéressant de mettre en relation
+                        les stations avec des aéroports dont elles seraient proches puisque ceux-ci
+                        sont sources de forte pollution locale. Nous avons pour cela utilisé une
+                        autre base de données et avons donc lié chaque station à tous les aéroports
+                        situés à moins de 18 km (valeur étant tirée de nos recherches).
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Calcul de la note</div>
+                        Afin de mesurer l'évolution de la qualité de l'air des différentes villes,
+                        il était nécessaire d'utiliser un indicateur. Nous avons choisi d'utiliser
+                        l'indicateur "ATMO" qui est un indicateur journalier mis en place et utilisé
+                        par les associations agréées de la surveillance de la qualité de l'air. Il
+                        permet de mesurer la qualité de l'air à l'échelle d'une ville et sur
+                        l'ensemble du territoire français : en métropole et en outre-mer. De plus,
+                        il fournit des résultats facilement interprétables visuellement pour les
+                        utilisateurs puisqu'une note allant de 1 à 6, illustrée à l'aide d'émojis de
+                        couleur, peut être calculée chaque jour.
+                        <br />
+                        Afin de calculer cette note, l'indicateur prend en compte la concentration
+                        de cinq principaux polluants atmosphériques que sont l'ozone (O3), le
+                        dioxyde d'azote (NO2), le dioxyde de soufre (SO2) ainsi que les particules
+                        de diamètre inférieur à 10 µm (PM10) et à 2,5 µm (PM2.5). Plus précisément,
+                        les maximums horaires d'ozone, dioxyde d'azote et de soufre sont pris en
+                        compte tandis que c'est la moyenne journalière qui est prise en compte pour
+                        les particules fines. <br />Pour chaque polluant, une note allant de "bon" à
+                        "extrêmement mauvais" est attribuée puis la note finale est définie comme
+                        étant la plus mauvaise note des cinq polluants. Le choix de prendre la note
+                        maximale comme finale et non une moyenne des notes peut être justifié par
+                        certaines études qui ont montré que ce sont les très fortes concentrations
+                        de polluants qui sont les plus dangereuses pour la santé dans la plupart des
+                        situations. <br />
+                        Le tableau utilisé pour le calcul de cette note est décrit ci-dessous.
+                        <img src="img/calcul_note_atmo.png" alt="tableau descriptif note" />
+                        <br />
+                        De plus, nous avons choisi d'ajouter le monoxyde d'azote (NO) dans nos
+                        calculs de note, car nous trouvions intéressant de coupler différentes
+                        méthodes de calcul de pollution afin d'obtenir des résultats plus précis.
+                        <br />
+                        L'indice ATMO a cependant certaines limites puisqu'il ne prend pas en compte
+                        les polluants individuellement et ne tient pas compte des effets dits «
+                        cocktails » et l'ensemble des polluants non réglementés, mais présents dans
+                        l'air ambiant comme les particules ultra-fines, les pesticides, les pollens…
+                        Il s'agit d'une représentation quotidienne simplifiée de la qualité de l'air
+                        en situation « de fond », c'est-à-dire éloigné des sources spécifiques de
+                        pollution comme les axes de trafic, raison pour laquelle nous avons choisi
+                        de représenter des sources de pollutions environnantes comme les aéroports.
+                    </div>
+                </li>
+            </ol>
+
+            <h1>Architecture et technologies</h1>
+            <p>Le style de la page web a été réalisé avec <i>Bootstrap</i>.</p>
+            <p>
+                La carte interactive est faite à l'aide de <i>Leaflet</i>. Elle utilise les données
+                cartographiques sous licence libre provenant de <i>OpenStreetMap</i>. Au vu du grand
+                nombre de stations à afficher, nous avons choisi de regrouper les stations proches,
+                grâce au plugin <i>MarkerCluster</i>, pour faciliter la visualisation des stations
+                et avoir une meilleure vue d'ensemble depuis une vue éloignée de la France.
+            </p>
+            <p>
+                La librairie
+                <i><a href="https://www.patrick-wied.at/static/heatmapjs/">heatmap.js</a></i> nous a
+                permis d'ajouter une couche interactive permettant de visualiser le niveau de
+                pollution du territoire selon la note journalière calculée précédemment. Elle permet
+                de faire l'interpolation des notes de points relativement proches afin d'obtenir un
+                rendu lissé sur l'ensemble des zones observées.
+            </p>
+            <p>
+                Les graphiques en lignes et en barre ont été réalisés à l'aide de <i>Chart.js</i>.
+                Nous avons choisi cette bibliothèque, car elle est très simple d'utilisation et
+                parce qu'elle permet de réaliser la plupart des graphiques envisageables. Afin de ne
+                pas rendre la page trop lourde au chargement, l'objet contenant la charte n'est pas
+                détruit lors d'un changement de données, mais est juste actualisé. Cela permet une
+                meilleure fluidité et ainsi une meilleure expérience utilisateur.
+            </p>
+            <p>
+                Les couleurs ont été choisies dans la mesure du possible de façon à être "agréables"
+                pour tous, notamment pour les personnes ayant des troubles de perception des
+                couleurs. Nous avons alors joué sur le choix des palettes de couleurs pour que le
+                site soit encore utilisable en image en nuances de gris pour des besoins
+                d'accessibilité visuelle.
+            </p>
+            <p>
+                Comme indiqué précédemment, avons choisi d'utiliser la notation de l'indice ATMO
+                avec des émojis de couleur. Cependant, cet indice ne permet pas d'illustrer l'impact
+                de chaque composant, et nous souhaitions montrer la "responsabilité" de chaque
+                polluant dans la note attribuée à une ville. Nous avons donc choisi de représenter
+                ceci à l'aide d'un PieChart. De nombreux articles font état de la difficulté
+                visuelle à analyser les proportions d'un PieChart pour les utilisateurs néanmoins
+                les valeurs représentées n'ont nul besoin d'être lues précisément pour être
+                comprises. Ce qui nous intéresse à travers ce graphique est de donner à
+                l'utilisateur un ordre de grandeur des concentrations des différents polluants,
+                comme pour permettre de comparer chaque polluant sans avoir à tenir compte des
+                unités respectives.
+            </p>
+
+            <h1>Conclusion</h1>
+            <p>
+                Nous avons analysé notre page web à l'aide du calculateur d'impact GreenIT Analysis.
+                À l'issue de cette analyse, nous avons obtenu la note <b>C</b>. Lorsque nous avons
+                analysé le détail des bonnes pratiques non respectées, nous avons remarqué que
+                certaines n'étaient pas de notre ressort, mais dépendaient, par exemple, de la carte
+                <i>Leaflet</i>.
+            </p>
+            <p>
+                Pour aller plus loin dans ce projet, il faudrait avoir accès aux données en temps
+                réel, via une API. Cela permettrait d'avoir des données actualisées, mais aussi
+                accès à une échelle de temps potentiellement bien plus grande. Un second point sur
+                lequel nous pourrions travailler est l'interaction homme-machine. En effet, afin de
+                l'améliorer, il serait possible de proposer une première version à de nombreux
+                utilisateurs et leur demander d'expliquer ce qu'ils ont apprécié, et ce qui ne leur
+                a pas plu. Nous pourrions alors proposer une seconde version actualisée répondant
+                mieux aux besoins réels de ces personnes.
+            </p>
+        </div>
+
+        <div class="container">
+            <footer
+                class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+            >
+                <div class="">© Copyright Challenge Open Data 2022 <br /></div>
+                <div class="justify-content-end">
+                    Arthur SARRY&emsp;Aurélien VILMINOT&emsp;Damien CLAUZON&emsp;Laure
+                    CERUTTI&emsp;Maxime NEMO
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>

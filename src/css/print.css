@@ -1,0 +1,10 @@
+nav, footer {
+    display: none;
+}
+
+body {
+    font-family: serif;
+    background-color: #fff!important;
+    color: #000!important;
+}
+

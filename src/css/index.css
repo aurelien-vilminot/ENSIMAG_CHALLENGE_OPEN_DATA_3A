@@ -1,0 +1,11 @@
+#map {
+    height: 590px;
+}
+
+#reportContainer > p {
+    text-align: justify;
+}
+
+ol, #reportContainer > p {
+    max-width: 70%;
+}

@@ -1,0 +1,8 @@
+# Node modules
+node_modules
+
+# Python-related
+.mypy_cache
+
+# Package lock
+package-lock.json
